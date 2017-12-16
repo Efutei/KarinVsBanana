@@ -6,7 +6,8 @@ var ASSETS = {
     bgImg: './img/bg_dote.jpg',
     tongUpKarin: './img/tongUpKarin.png',
     tongDownKarin: './img/tongDownKarin.png',
-    banana: './img/banana_kawa.png'
+    banana: './img/banana_kawa.png',
+    gameOverImage: './img/gameOverImage.jpg'
   }
 };
 var SCREEN_WIDTH  = 465;
@@ -17,12 +18,19 @@ var notSpawnCount = 0;
 var KARIN_START_X = SCREEN_WIDTH / 2 - 50;
 var KARIN_START_Y = SCREEN_HEIGHT / 2 + 80;
 var score = 0;
+var gameOver = false;
 
 // MainScene クラスを定義
 phina.define('MainScene', {
   superClass: 'DisplayScene',
   init: function() {
     this.superInit();
+    //グローバル変数を初期値に
+    moveSpeed = 5;
+    stopScroll = false;
+    notSpawnCount = 0;
+    score = 0;
+    gameOver = false;
     // 背景色を指定
     this.backgroundColor = '#444';
     this.bg0 = Bg().addChildTo(this);
@@ -32,12 +40,17 @@ phina.define('MainScene', {
     this.karin = Karin().addChildTo(this);
 
     this.bananas = DisplayElement().addChildTo(this);
-
+    this.scoreText = ScoreText().addChildTo(this);
   },
   update: function(app){
     var p = app.pointer;
     if(p.getPointingStart()){
       this.karin.catchBanana();
+    }
+    if(this.checkHit() && !gameOver){
+      gameOver = true;
+      stopScroll = true;
+      this.karin.slip();
     }
   },
   spawnBanana: function(){
@@ -47,6 +60,9 @@ phina.define('MainScene', {
       Banana().addChildTo(this.bananas);
       notSpawnCount = 0;
     }
+  },
+  checkHit: function(){
+    return this.bananas.children.first && this.bananas.children.first.x <= this.karin.x;
   }
 });
 
@@ -123,6 +139,10 @@ phina.define('Karin', {
       if(nextBanana&&this.target.x + 50 < nextBanana.x && nextBanana.x <= this.target.x + 120){
         console.log(nextBanana);
         nextBanana.remove();
+        score += 1;
+        moveSpeed += 1;
+      }else{
+        this.target.swingAway();
       }
     })
     .by({
@@ -133,11 +153,42 @@ phina.define('Karin', {
       this.target.setImage('tongUpKarin', 230 * 1.3, 188 * 1.3);
       stopScroll = false;
     })
-    .wait(30)
+    .wait(30);
+  },
+  swingAway: function(){
+    this.tweener
+    .clear()
+    .by({
+      rotation: 180
+    }, 500, "swing")
+    .by({
+      y: 30
+    }, 30, "swing")
     .call(function(){
+      this.target.parent.exit({
+        score: score,
+        hashtags: '歌鈴vsバナナ'
+      });
     });
-
+  },
+  slip: function(){
+    this.tweener
+    .clear()
+    .by({
+      rotation: -180
+    }, 500, "swing")
+    .by({
+      y: 30
+    }, 30, "swing")
+    .call(function(){
+      this.target.parent.exit({
+        score: score,
+        message: '残念!',
+        hashtags: '歌鈴vsバナナ'
+      });
+    });
   }
+
 });
 
 phina.define('Banana', {
@@ -158,6 +209,128 @@ phina.define('Banana', {
   checkOutOfWindow: function(){
     return this.x < -SCREEN_WIDTH;
   }
+});
+
+phina.define('ScoreText',{
+  superClass: 'Label',
+
+  init: function(){
+    this.superInit();
+    this.x = SCREEN_WIDTH - (this.width + 70);
+    this.y = 50;
+    this.fill = "orange";
+  },
+  update: function(){
+    this.text = "SCORE : " + score + " 個";
+    this.x = SCREEN_WIDTH - (this.width + 70);
+  }
+});
+
+phina.define('GameOverImage', {
+  superClass: 'Sprite',
+  init: function(){
+    this.superInit('gameOverImage', 400, 300);
+    this.x = SCREEN_WIDTH / 2;
+    this.y = SCREEN_WIDTH / 2 + 100;
+  }
+});
+
+// リザルトシーン上書き
+phina.define('ResultScene', {
+  superClass: 'DisplayScene',
+  /**
+   * @constructor
+   */
+  init: function(params) {
+    params = ({}).$safe(params, phina.game.ResultScene.defaults);
+    this.superInit(params);
+
+    var message = params.message.format(params);
+
+    this.backgroundColor = params.backgroundColor;
+    this.gameOverImage = GameOverImage().addChildTo(this);
+
+    this.fromJSON({
+      children: {
+        scoreText: {
+          className: 'phina.display.Label',
+          arguments: {
+            text: 'score',
+            fill: params.fontColor,
+            stroke: null,
+            fontSize: 48,
+          },
+          x: this.gridX.span(8),
+          y: this.gridY.span(1),
+        },
+        scoreLabel: {
+          className: 'phina.display.Label',
+          arguments: {
+            text: params.score+'',
+            fill: params.fontColor,
+            stroke: null,
+            fontSize: 72,
+          },
+          x: this.gridX.span(8),
+          y: this.gridY.span(3),
+        },
+
+        shareButton: {
+          className: 'phina.ui.Button',
+          arguments: [{
+            text: '★',
+            width: 128,
+            height: 128,
+            fontColor: params.fontColor,
+            fontSize: 50,
+            cornerRadius: 64,
+            fill: 'rgba(240, 240, 240, 0.5)',
+            // stroke: '#aaa',
+            // strokeWidth: 2,
+          }],
+          x: this.gridX.center(-3),
+          y: this.gridY.span(14),
+        },
+        playButton: {
+          className: 'phina.ui.Button',
+          arguments: [{
+            text: '▶',
+            width: 128,
+            height: 128,
+            fontColor: params.fontColor,
+            fontSize: 50,
+            cornerRadius: 64,
+            fill: 'rgba(240, 240, 240, 0.5)',
+            // stroke: '#aaa',
+            // strokeWidth: 2,
+          }],
+          x: this.gridX.center(3),
+          y: this.gridY.span(14),
+
+          interactive: true,
+          onpush: function() {
+            this.exit();
+          }.bind(this),
+        },
+      }
+    });
+
+    if (params.exitType === 'touch') {
+      this.on('pointend', function() {
+        this.exit();
+      });
+    }
+
+    this.shareButton.onclick = function() {
+      var text = 'Score: {0}\n{1}'.format(params.score, this.parent.messageLabel.text);
+      var url = phina.social.Twitter.createURL({
+        text: text,
+        hashtags: params.hashtags,
+        url: params.url,
+      });
+      window.open(url, 'share window', 'width=480, height=320');
+    };
+  },
 });
 
 // メイン処理
