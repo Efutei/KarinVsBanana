@@ -64,10 +64,7 @@ phina.define('Karin', {
     this.scaleX *= -1;
   },
   update: function(){
-    this.move();
     this.hopping();
-  },
-  move: function(){
   },
   hopping: function(){
     this.x -= moveSpeed;
