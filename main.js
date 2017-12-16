@@ -24,6 +24,8 @@ phina.define('MainScene', {
     this.bg0 = Bg().addChildTo(this);
     this.bg1 = Bg().addChildTo(this);
     this.bg1.x = -SCREEN_WIDTH*2 - 3;
+
+    this.karin = Karin().addChildTo(this);
   },
   update: function(app){
 
@@ -48,6 +50,20 @@ phina.define('Bg', {
   },
   checkOutOfWindow: function(){
     return this.x < -SCREEN_WIDTH;
+  }
+});
+
+phina.define('Karin', {
+  superClass: 'Sprite',
+  init: function(){
+    this.superInit('tongUpKarin', 179 * 1.3, 188 * 1.3);
+    this.x = SCREEN_WIDTH / 2;
+    this.y = SCREEN_HEIGHT / 2 + 70;
+    this.scaleX *= -1;
+  },
+  update: function(){
+  },
+  hopping: function(){
   }
 });
 
