@@ -7,7 +7,7 @@ var ASSETS = {
     tongUpKarin: './img/tongUpKarin.png',
     tongDownKarin: './img/tongDownKarin.png',
     banana: './img/banana_kawa.png',
-    gameOverImage: './img/gameOverImage.jpg'
+    gameOverImage: './img/gameoverImage.jpg'
   }
 };
 var SCREEN_WIDTH  = 465;
