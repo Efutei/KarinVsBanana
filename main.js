@@ -1,18 +1,36 @@
 // phina.js をグローバル領域に展開
 phina.globalize();
 
+var ASSETS = {
+  image: {
+    bgImg: './img/bg_dote.jpg',
+    tongUpKarin: './img/tongUpKarin.png',
+    tongDownKarin: './img/tongDownKarin.png',
+    banana: './img/banana_kawa.png'
+  }
+};
+var SCREEN_WIDTH  = 465;
+var SCREEN_HEIGHT = 665;
+var stopScroll = false;
+
 // MainScene クラスを定義
 phina.define('MainScene', {
-  superClass: 'CanvasScene',
+  superClass: 'DisplayScene',
   init: function() {
     this.superInit();
     // 背景色を指定
     this.backgroundColor = '#444';
-    // ラベルを生成
-    this.label = Label('Hello, phina.js!').addChildTo(this);
-    this.label.x = this.gridX.center(); // x 座標
-    this.label.y = this.gridY.center(); // y 座標
-    this.label.fill = 'white'; // 塗りつぶし色
+    this.bg1 = Bg().addChildTo(this);
+  },
+  
+});
+
+phina.define('Bg', {
+  superClass: 'Sprite',
+  init: function(){
+    this.superInit('bgImg', SCREEN_WIDTH * 2, SCREEN_HEIGHT);
+    this.x = SCREEN_WIDTH / 2;
+    this.y = SCREEN_HEIGHT / 2;
   },
 });
 
@@ -20,7 +38,12 @@ phina.define('MainScene', {
 phina.main(function() {
   // アプリケーション生成
   var app = GameApp({
-    startLabel: 'main', // メインシーンから開始する
+    title: '歌鈴vsバナナ',
+    startLabel: location.search.substr(1).toObject().scene || 'title',
+    width: SCREEN_WIDTH,
+    height: SCREEN_HEIGHT,
+    assets: ASSETS,
+    backgroundColor: '#444',
   });
   // アプリケーション実行
   app.run();
