@@ -11,12 +11,12 @@ var ASSETS = {
 };
 var SCREEN_WIDTH  = 465;
 var SCREEN_HEIGHT = 665;
-var moveSpeed = 10;
+var moveSpeed = 5;
 var stopScroll = false;
-var karinCatchable = true;
 var notSpawnCount = 0;
 var KARIN_START_X = SCREEN_WIDTH / 2 - 50;
 var KARIN_START_Y = SCREEN_HEIGHT / 2 + 80;
+var score = 0;
 
 // MainScene クラスを定義
 phina.define('MainScene', {
@@ -37,13 +37,13 @@ phina.define('MainScene', {
   update: function(app){
     var p = app.pointer;
     if(p.getPointingStart()){
-      this.karin.nextCatch = true;
+      this.karin.catchBanana();
     }
   },
   spawnBanana: function(){
     notSpawnCount += 1;
     var rnd = Random.randint(0, 3)
-    if(rnd == 0||notSpawnCount == 3 || true){
+    if(rnd == 0||notSpawnCount == 3){
       Banana().addChildTo(this.bananas);
       notSpawnCount = 0;
     }
@@ -86,16 +86,11 @@ phina.define('Karin', {
     if(!stopScroll){
       this.hopping();
     }
-    if(this.nextCatch && karinCatchable){
-      this.nextCatch = false;
-      this.catchBanana();
-    }
   },
   hopping: function(){
     this.x -= moveSpeed;
     this.tweener
     .call(function(){
-      karinCatchable = false;
       this.target.parent.spawnBanana();
     })
     .to({
@@ -106,15 +101,11 @@ phina.define('Karin', {
       x: KARIN_START_X + moveSpeed,
       y: KARIN_START_Y
     },180,"swing")
-    .call(function(){
-      karinCatchable = true
-    })
     .wait(150)
     .play();
   },
   catchBanana: function(){
     stopScroll = true;
-    karinCatchable = false;
     this.tweener
     .clear()
     .set({
@@ -129,7 +120,7 @@ phina.define('Karin', {
     }, 100, "swing")
     .call(function(){
       var nextBanana = this.target.parent.bananas.children.first;
-      if(this.target.x + 50 < nextBanana.x && nextBanana.x <= this.target.x + 120){
+      if(nextBanana&&this.target.x + 50 < nextBanana.x && nextBanana.x <= this.target.x + 120){
         console.log(nextBanana);
         nextBanana.remove();
       }
@@ -144,7 +135,6 @@ phina.define('Karin', {
     })
     .wait(30)
     .call(function(){
-      karinCatchable = true;
     });
 
   }
