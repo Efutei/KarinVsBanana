@@ -11,6 +11,7 @@ var ASSETS = {
 };
 var SCREEN_WIDTH  = 465;
 var SCREEN_HEIGHT = 665;
+var moveSpeed = 3;
 var stopScroll = false;
 
 // MainScene クラスを定義
@@ -20,18 +21,34 @@ phina.define('MainScene', {
     this.superInit();
     // 背景色を指定
     this.backgroundColor = '#444';
+    this.bg0 = Bg().addChildTo(this);
     this.bg1 = Bg().addChildTo(this);
+    this.bg1.x = -SCREEN_WIDTH*2 - 3;
   },
-  
+  update: function(app){
+
+  }
 });
 
 phina.define('Bg', {
   superClass: 'Sprite',
   init: function(){
     this.superInit('bgImg', SCREEN_WIDTH * 2, SCREEN_HEIGHT);
-    this.x = SCREEN_WIDTH / 2;
+    this.x = 0;
     this.y = SCREEN_HEIGHT / 2;
   },
+  update: function(){
+    this.move();
+  },
+  move: function(){
+    this.x -= moveSpeed;
+    if(this.checkOutOfWindow()){
+      this.x = SCREEN_WIDTH * 2 - 3;
+    }
+  },
+  checkOutOfWindow: function(){
+    return this.x < -SCREEN_WIDTH;
+  }
 });
 
 // メイン処理
