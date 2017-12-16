@@ -11,9 +11,10 @@ var ASSETS = {
 };
 var SCREEN_WIDTH  = 465;
 var SCREEN_HEIGHT = 665;
-var moveSpeed = 3;
+var moveSpeed = 10;
 var stopScroll = false;
 var karinCatchable = true;
+var notSpawnCount = 0;
 var KARIN_START_X = SCREEN_WIDTH / 2 - 50;
 var KARIN_START_Y = SCREEN_HEIGHT / 2 + 80;
 
@@ -26,36 +27,26 @@ phina.define('MainScene', {
     this.backgroundColor = '#444';
     this.bg0 = Bg().addChildTo(this);
     this.bg1 = Bg().addChildTo(this);
-    this.bg1.x = -SCREEN_WIDTH*2 - 3;
+    this.bg1.x = -SCREEN_WIDTH*2 - moveSpeed;
 
     this.karin = Karin().addChildTo(this);
-    this.spawnBanana();
 
     this.bananas = DisplayElement().addChildTo(this);
+
   },
   update: function(app){
-    if(!stopScroll){
-      this.bg0.move();
-      this.bg1.move();
-      this.karin.hopping();
-    }
     var p = app.pointer;
     if(p.getPointingStart()){
       this.karin.nextCatch = true;
     }
   },
   spawnBanana: function(){
-    this.tweener
-    .wait(500)
-    .call(function(){
-      console.log(this.target);
-      var rnd = Random.randint(0, 5)
-      if(rnd == 0){
-        Banana().addChildTo(this.target.bananas);
-      }
-    })
-    .wait(500)
-    .setLoop(true);
+    notSpawnCount += 1;
+    var rnd = Random.randint(0, 3)
+    if(rnd == 0||notSpawnCount == 3 || true){
+      Banana().addChildTo(this.bananas);
+      notSpawnCount = 0;
+    }
   }
 });
 
@@ -67,11 +58,14 @@ phina.define('Bg', {
     this.y = SCREEN_HEIGHT / 2;
   },
   update: function(){
+    if(!stopScroll){
+      this.move();
+    }
   },
   move: function(){
     this.x -= moveSpeed;
     if(this.checkOutOfWindow()){
-      this.x = SCREEN_WIDTH * 2 - 3;
+      this.x = SCREEN_WIDTH * 2 - moveSpeed;
     }
   },
   checkOutOfWindow: function(){
@@ -89,6 +83,9 @@ phina.define('Karin', {
     this.nextCatch = false;
   },
   update: function(){
+    if(!stopScroll){
+      this.hopping();
+    }
     if(this.nextCatch && karinCatchable){
       this.nextCatch = false;
       this.catchBanana();
@@ -98,14 +95,15 @@ phina.define('Karin', {
     this.x -= moveSpeed;
     this.tweener
     .call(function(){
-      karinCatchable = false
+      karinCatchable = false;
+      this.target.parent.spawnBanana();
     })
     .to({
-      x: KARIN_START_X + 10,
+      x: KARIN_START_X + moveSpeed,
       y: KARIN_START_Y - 20
     },250,"swing")
     .to({
-      x: KARIN_START_X + 10,
+      x: KARIN_START_X + moveSpeed,
       y: KARIN_START_Y
     },180,"swing")
     .call(function(){
@@ -115,7 +113,6 @@ phina.define('Karin', {
     .play();
   },
   catchBanana: function(){
-    console.log("hoge");
     stopScroll = true;
     karinCatchable = false;
     this.tweener
@@ -123,11 +120,30 @@ phina.define('Karin', {
     .set({
       y: KARIN_START_Y
     })
-    .rotateBy(10, 100, "swing")
-    .rotateBy(-10, 100, "swing")
-    .wait(300)
     .call(function(){
+      this.target.setImage('tongDownKarin', 230 * 1.3, 188 * 1.3);
+    })
+    .by({
+      x: 45,
+      rotation: 30
+    }, 100, "swing")
+    .call(function(){
+      var nextBanana = this.target.parent.bananas.children.first;
+      if(this.target.x + 50 < nextBanana.x && nextBanana.x <= this.target.x + 120){
+        console.log(nextBanana);
+        nextBanana.remove();
+      }
+    })
+    .by({
+      x: -45,
+      rotation: -30
+    }, 100, "swing")
+    .call(function(){
+      this.target.setImage('tongUpKarin', 230 * 1.3, 188 * 1.3);
       stopScroll = false;
+    })
+    .wait(30)
+    .call(function(){
       karinCatchable = true;
     });
 
@@ -142,7 +158,9 @@ phina.define('Banana', {
     this.y = KARIN_START_Y + 98;
   },
   update: function(){
-    this.move();
+    if(!stopScroll){
+      this.move();
+    }
   },
   move: function(){
     this.x -= moveSpeed;
