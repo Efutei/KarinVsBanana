@@ -322,7 +322,7 @@ phina.define('ResultScene', {
     }
 
     this.shareButton.onclick = function() {
-      var text = 'Score: {0}\n{1}'.format(params.score, this.parent.messageLabel.text);
+      var text = 'Score: {0}\n{1}'.format(params.score, "バナナには勝てなかったよ...\n");
       var url = phina.social.Twitter.createURL({
         text: text,
         hashtags: params.hashtags,
