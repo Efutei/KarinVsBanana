@@ -58,7 +58,7 @@ phina.define('TitleScene', {
           arguments: {
             text: params.title,
             fill: params.fontColor,
-            stroke: false,
+            stroke: null,
             fontSize: 64,
           },
           x: this.gridX.center(),
@@ -75,7 +75,7 @@ phina.define('TitleScene', {
             arguments: {
               text: "TOUCH START",
               fill: params.fontColor,
-              stroke: false,
+              stroke: null,
               fontSize: 32,
             },
             x: this.gridX.center(),
