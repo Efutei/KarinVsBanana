@@ -20,6 +20,7 @@ var KARIN_START_X = SCREEN_WIDTH / 2 - 50;
 var KARIN_START_Y = SCREEN_HEIGHT / 2 + 80;
 var score = 0;
 var gameOver = false;
+var thisResult;
 
 phina.define('StartImage', {
   superClass: 'Sprite',
@@ -129,8 +130,27 @@ phina.define('MainScene', {
   },
   checkHit: function(){
     return this.bananas.children.first && this.bananas.children.first.x <= this.karin.x;
+  },
+  gameOver: function(){
+    this.getRank();
+    this.exit({
+      score: score,
+      message: 'Rank: 取得中...',
+      hashtags: '歌鈴vsバナナ'
+    });
+  },
+  getRank: function(){
+    var script = phina.asset.Script();
+    var src = "https://script.google.com/macros/s/AKfycbwCh1wpH0GkdByhDwzb7JOE-yUvjWoxGzfZPr3J824bOqGRe1Sm/exec?";
+    src += "score="+score+"&callback=cameRankData";
+    script.load(src);
   }
 });
+
+function cameRankData(json){
+  var newMessage = "Rank: "+json.response.rank + " / " + json.response.total;
+  thisResult.rankingLabel.text = newMessage;
+}
 
 phina.define('Bg', {
   superClass: 'Sprite',
@@ -231,10 +251,7 @@ phina.define('Karin', {
       y: 30
     }, 30, "swing")
     .call(function(){
-      this.target.parent.exit({
-        score: score,
-        hashtags: '歌鈴vsバナナ'
-      });
+      this.target.parent.gameOver();
     });
   },
   slip: function(){
@@ -247,10 +264,7 @@ phina.define('Karin', {
       y: 30
     }, 30, "swing")
     .call(function(){
-      this.target.parent.exit({
-        score: score,
-        hashtags: '歌鈴vsバナナ'
-      });
+      this.target.parent.gameOver();
     });
   }
 
@@ -286,7 +300,7 @@ phina.define('ScoreText',{
     this.fill = "#D23F40";
   },
   update: function(){
-    this.text = "SCORE : " + score + " 個";
+    this.text = "Score : " + score + " 個";
     this.x = SCREEN_WIDTH - (this.width + 70);
   }
 });
@@ -313,6 +327,7 @@ phina.define('ResultScene', {
     var message = params.message.format(params);
 
     this.backgroundColor = params.backgroundColor;
+    thisResult = this;
     this.gameOverImage = GameOverImage().addChildTo(this);
 
     this.fromJSON({
@@ -320,24 +335,25 @@ phina.define('ResultScene', {
         scoreText: {
           className: 'phina.display.Label',
           arguments: {
-            text: 'score',
+            text: 'Score: '+params.score,
             fill: params.fontColor,
             stroke: null,
-            fontSize: 48,
+            fontSize: 64,
           },
           x: this.gridX.span(8),
-          y: this.gridY.span(1),
+          y: this.gridY.span(1.5),
         },
-        scoreLabel: {
+
+        rankingLabel: {
           className: 'phina.display.Label',
           arguments: {
-            text: params.score+'',
+            text: message,
             fill: params.fontColor,
             stroke: null,
-            fontSize: 72,
+            fontSize: 32,
           },
           x: this.gridX.span(8),
-          y: this.gridY.span(3),
+          y: this.gridY.span(3.5),
         },
 
         shareButton: {
