@@ -3,6 +3,7 @@ phina.globalize();
 
 var ASSETS = {
   image: {
+    startImage: './img/startImage.jpg',
     bgImg: './img/bg_dote.jpg',
     tongUpKarin: './img/tongUpKarin.png',
     tongDownKarin: './img/tongDownKarin.png',
@@ -19,6 +20,69 @@ var KARIN_START_X = SCREEN_WIDTH / 2 - 50;
 var KARIN_START_Y = SCREEN_HEIGHT / 2 + 80;
 var score = 0;
 var gameOver = false;
+
+phina.define('StartImage', {
+  superClass: 'Sprite',
+  init: function(){
+    this.superInit('startImage', 396, 428);
+    this.x = SCREEN_WIDTH / 2;
+    this.y = SCREEN_WIDTH / 2 + 100;
+  }
+});
+
+phina.define('TitleScene', {
+  superClass: 'DisplayScene',
+  /**
+   * @constructor
+   */
+  init: function(params) {
+    this.superInit(params);
+
+    params = ({}).$safe(params, phina.game.TitleScene.defaults);
+
+    this.backgroundColor = params.backgroundColor;
+    this.startImage = StartImage().addChildTo(this);
+
+    this.fromJSON({
+      children: {
+        titleLabel: {
+          className: 'phina.display.Label',
+          arguments: {
+            text: params.title,
+            fill: params.fontColor,
+            stroke: false,
+            fontSize: 64,
+          },
+          x: this.gridX.center(),
+          y: this.gridY.span(1.5),
+        }
+      }
+    });
+
+    if (params.exitType === 'touch') {
+      this.fromJSON({
+        children: {
+          touchLabel: {
+            className: 'phina.display.Label',
+            arguments: {
+              text: "TOUCH START",
+              fill: params.fontColor,
+              stroke: false,
+              fontSize: 32,
+            },
+            x: this.gridX.center(),
+            y: this.gridY.span(14.5),
+          },
+        },
+      });
+
+      this.on('pointend', function() {
+        this.exit();
+      });
+    }
+  }
+
+});
 
 // MainScene クラスを定義
 phina.define('MainScene', {
@@ -143,7 +207,7 @@ phina.define('Karin', {
         score += 1;
         moveSpeed += 1;
       }else{
-        gameOver = true;
+        //gameOver = true; //thanks bode!!
         this.target.swingAway();
       }
     })
@@ -219,7 +283,7 @@ phina.define('ScoreText',{
     this.superInit();
     this.x = SCREEN_WIDTH - (this.width + 70);
     this.y = 50;
-    this.fill = "orange";
+    this.fill = "#D23F40";
   },
   update: function(){
     this.text = "SCORE : " + score + " 個";
@@ -339,11 +403,12 @@ phina.main(function() {
   // アプリケーション生成
   var app = GameApp({
     title: '歌鈴vsバナナ',
-    startLabel: location.search.substr(1).toObject().scene || 'title',
+    startLabel: 'title',
     width: SCREEN_WIDTH,
     height: SCREEN_HEIGHT,
     assets: ASSETS,
-    backgroundColor: '#444',
+    fontColor: '#FCF5F7',
+    backgroundColor: '#715454',
   });
   // アプリケーション実行
   app.run();
