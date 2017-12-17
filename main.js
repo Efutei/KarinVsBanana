@@ -43,14 +43,16 @@ phina.define('MainScene', {
     this.scoreText = ScoreText().addChildTo(this);
   },
   update: function(app){
-    var p = app.pointer;
-    if(p.getPointingStart()){
-      this.karin.catchBanana();
-    }
-    if(this.checkHit() && !gameOver){
-      gameOver = true;
-      stopScroll = true;
-      this.karin.slip();
+    if(!gameOver){
+      var p = app.pointer;
+      if(p.getPointingStart()){
+        this.karin.catchBanana();
+      }
+      if(this.checkHit()){
+        gameOver = true;
+        stopScroll = true;
+        this.karin.slip();
+      }
     }
   },
   spawnBanana: function(){
@@ -142,6 +144,7 @@ phina.define('Karin', {
         score += 1;
         moveSpeed += 1;
       }else{
+        gameOver = true;
         this.target.swingAway();
       }
     })
@@ -183,7 +186,6 @@ phina.define('Karin', {
     .call(function(){
       this.target.parent.exit({
         score: score,
-        message: '残念!',
         hashtags: '歌鈴vsバナナ'
       });
     });
