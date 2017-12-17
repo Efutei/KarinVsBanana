@@ -83,7 +83,7 @@ phina.define('Bg', {
   move: function(){
     this.x -= moveSpeed;
     if(this.checkOutOfWindow()){
-      this.x = SCREEN_WIDTH * 2 - moveSpeed;
+      this.x = SCREEN_WIDTH * 2 - moveSpeed * 2;
     }
   },
   checkOutOfWindow: function(){
@@ -139,7 +139,6 @@ phina.define('Karin', {
     .call(function(){
       var nextBanana = this.target.parent.bananas.children.first;
       if(nextBanana&&this.target.x + 50 < nextBanana.x && nextBanana.x <= this.target.x + 120){
-        console.log(nextBanana);
         nextBanana.remove();
         score += 1;
         moveSpeed += 1;
