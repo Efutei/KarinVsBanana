@@ -9,7 +9,14 @@ var ASSETS = {
     tongDownKarin: './img/tongDownKarin.png',
     banana: './img/banana_kawa.png',
     gameOverImage: './img/gameOverImage.jpg'
-  }
+  },
+  sound: {
+    pick: './sound/bubble-burst1.mp3',
+    down: './sound/down1.mp3',
+    swing: './sound/punch-swing1.mp3',
+    jump: './sound/cursor7.mp3',
+    bgm: './sound/kvb.mp3'
+  },
 };
 var SCREEN_WIDTH  = 465;
 var SCREEN_HEIGHT = 665;
@@ -101,11 +108,10 @@ phina.define('MainScene', {
     this.bg0 = Bg().addChildTo(this);
     this.bg1 = Bg().addChildTo(this);
     this.bg1.x = -SCREEN_WIDTH*2 - moveSpeed;
-
     this.karin = Karin().addChildTo(this);
-
     this.bananas = DisplayElement().addChildTo(this);
     this.scoreText = ScoreText().addChildTo(this);
+    SoundManager.playMusic('bgm');
   },
   update: function(app){
     if(!gameOver){
@@ -132,6 +138,8 @@ phina.define('MainScene', {
     return this.bananas.children.first && this.bananas.children.first.x <= this.karin.x;
   },
   gameOver: function(){
+    SoundManager.stopMusic();
+    SoundManager.play('down');
     this.getRank();
     this.exit({
       score: score,
@@ -194,6 +202,7 @@ phina.define('Karin', {
     this.tweener
     .call(function(){
       this.target.parent.spawnBanana();
+      SoundManager.play('jump');
     })
     .to({
       x: KARIN_START_X + moveSpeed,
@@ -224,10 +233,12 @@ phina.define('Karin', {
       var nextBanana = this.target.parent.bananas.children.first;
       if(nextBanana&&this.target.x + 50 < nextBanana.x && nextBanana.x <= this.target.x + 120){
         nextBanana.remove();
+        SoundManager.play('pick');
         score += 1;
         moveSpeed += 1;
       }else{
         //gameOver = true; //thanks bode!!
+        SoundManager.play('swing');
         this.target.swingAway();
       }
     })
@@ -425,6 +436,13 @@ phina.main(function() {
     assets: ASSETS,
     fontColor: '#FCF5F7',
     backgroundColor: '#715454',
+  });
+  //iphone用ダミー音
+  app.domElement.addEventListener('touchend', function dummy() {
+    var s = phina.asset.Sound();
+    s.loadFromBuffer();
+    s.play().stop();
+    app.domElement.removeEventListener('touchend', dummy);
   });
   // アプリケーション実行
   app.run();
