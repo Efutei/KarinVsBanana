@@ -34,7 +34,7 @@ phina.define('StartImage', {
   init: function(){
     this.superInit('startImage', 396, 428);
     this.x = SCREEN_WIDTH / 2;
-    this.y = SCREEN_WIDTH / 2 + 100;
+    this.y = SCREEN_WIDTH / 2 + 113;
   }
 });
 
@@ -62,7 +62,7 @@ phina.define('TitleScene', {
             fontSize: 64,
           },
           x: this.gridX.center(),
-          y: this.gridY.span(1.5),
+          y: this.gridY.span(1.8),
         }
       }
     });
@@ -79,7 +79,7 @@ phina.define('TitleScene', {
               fontSize: 32,
             },
             x: this.gridX.center(),
-            y: this.gridY.span(14.5),
+            y: this.gridY.span(14.8),
           },
         },
       });
@@ -311,8 +311,8 @@ phina.define('ScoreText',{
     this.fill = "#D23F40";
   },
   update: function(){
-    this.text = "Score : " + score + " 個";
-    this.x = SCREEN_WIDTH - (this.width + 70);
+    this.text = "Score: " + score + " ";
+    this.x = SCREEN_WIDTH - (this.width + 40);
   }
 });
 
