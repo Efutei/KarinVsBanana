@@ -175,7 +175,7 @@ phina.define('Bg', {
   move: function(){
     this.x -= moveSpeed;
     if(this.checkOutOfWindow()){
-      this.x = SCREEN_WIDTH * 2 - moveSpeed * 2;
+      this.x = SCREEN_WIDTH * 2 - moveSpeed * 3;
     }
   },
   checkOutOfWindow: function(){
