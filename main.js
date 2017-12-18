@@ -317,7 +317,7 @@ phina.define('ScoreText',{
     this.superInit();
     this.x = SCREEN_WIDTH - (this.width + 70);
     this.y = 50;
-    this.fill = "#D23F40";
+    this.fill = "#D24F60";
   },
   update: function(){
     this.text = "Score: " + score + " ";
