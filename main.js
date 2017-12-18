@@ -4,7 +4,8 @@ phina.globalize();
 var ASSETS = {
   image: {
     startImage: './img/startImage.jpg',
-    bgImg: './img/bg_dote.jpg',
+    bgImg0: './img/bg_dote.jpg',
+    bgImg1: './img/bg_dote_yuyake.jpg',
     tongUpKarin: './img/tongUpKarin.png',
     tongDownKarin: './img/tongDownKarin.png',
     banana: './img/banana_kawa.png',
@@ -124,6 +125,9 @@ phina.define('MainScene', {
         stopScroll = true;
         this.karin.slip();
       }
+      if(score >= 30){
+        this.setSunset();
+      }
     }
   },
   spawnBanana: function(){
@@ -136,6 +140,11 @@ phina.define('MainScene', {
   },
   checkHit: function(){
     return this.bananas.children.first && this.bananas.children.first.x <= this.karin.x;
+  },
+  setSunset: function(){
+    this.bg0.setImage('bgImg1', SCREEN_WIDTH * 2, SCREEN_HEIGHT);
+    this.bg1.setImage('bgImg1', SCREEN_WIDTH * 2, SCREEN_HEIGHT);
+    this.scoreText.fill = 'blue';
   },
   gameOver: function(){
     SoundManager.stopMusic();
@@ -163,7 +172,7 @@ function cameRankData(json){
 phina.define('Bg', {
   superClass: 'Sprite',
   init: function(){
-    this.superInit('bgImg', SCREEN_WIDTH * 2, SCREEN_HEIGHT);
+    this.superInit('bgImg0', SCREEN_WIDTH * 2, SCREEN_HEIGHT);
     this.x = 0;
     this.y = SCREEN_HEIGHT / 2;
   },
