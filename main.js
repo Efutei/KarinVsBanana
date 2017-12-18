@@ -149,7 +149,7 @@ phina.define('MainScene', {
   gameOver: function(){
     SoundManager.stopMusic();
     SoundManager.play('down');
-    this.getRank();
+    //this.getRank();
     this.exit({
       score: score,
       message: 'Rank: 一時停止中',
