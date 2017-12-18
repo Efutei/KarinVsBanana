@@ -149,10 +149,10 @@ phina.define('MainScene', {
   gameOver: function(){
     SoundManager.stopMusic();
     SoundManager.play('down');
-    //this.getRank();
+    this.getRank();
     this.exit({
       score: score,
-      message: 'Rank: 一時停止中',
+      message: 'Rank: 取得中...',
       hashtags: '歌鈴vsバナナ'
     });
   },
