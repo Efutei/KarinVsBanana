@@ -125,7 +125,7 @@ phina.define('MainScene', {
         stopScroll = true;
         this.karin.slip();
       }
-      if(score >= 30){
+      if(score >= 25){
         this.setSunset();
       }
     }
