@@ -152,7 +152,7 @@ phina.define('MainScene', {
     this.getRank();
     this.exit({
       score: score,
-      message: 'Rank: 取得中...',
+      message: 'Rank: 一時停止中',
       hashtags: '歌鈴vsバナナ'
     });
   },
