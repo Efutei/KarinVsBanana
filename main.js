@@ -31,6 +31,7 @@ var gameOver = false;
 var thisResult;
 var rankTimeout;
 var restrictionCount = 0;
+var gotRank = false;
 
 phina.define('StartImage', {
   superClass: 'Sprite',
@@ -106,6 +107,7 @@ phina.define('MainScene', {
     notSpawnCount = 0;
     score = 0;
     gameOver = false;
+    gotRank = false;
     if(restrictionCount > 0){//ランキング機能を制限
       restrictionCount -= 1;
     }
@@ -169,7 +171,7 @@ phina.define('MainScene', {
     });
   },
   getRank: function(){
-    rankTimeout = window.setTimeout(failedToFetch, 5000);
+    rankTimeout = window.setTimeout(failedToFetch, 4000);
     var script = phina.asset.Script();
     var src = "https://script.google.com/macros/s/AKfycbwCh1wpH0GkdByhDwzb7JOE-yUvjWoxGzfZPr3J824bOqGRe1Sm/exec?";
     src += "score="+score+"&callback=cameRankData";
@@ -181,6 +183,7 @@ function cameRankData(json){
   window.clearTimeout(rankTimeout);
   var newMessage = "Rank: "+json.response.rank + " / " + json.response.total;
   thisResult.rankingLabel.text = newMessage;
+  gotRank = true;
 }
 
 function failedToFetch(){
@@ -442,8 +445,12 @@ phina.define('ResultScene', {
     }
 
     this.shareButton.onclick = function() {
-      //var text = 'Score: {0}\n{1}\n{2}\n'.format(params.score, this.parent.rankingLabel.text, "バナナには勝てなかったよ...");
-      var text = 'Score: {0}\n{1}\n'.format(params.score, "バナナには勝てなかったよ...");
+      var text;
+      if(gotRank){
+        text = 'Score: {0}\n{1}\n{2}\n'.format(params.score, this.parent.rankingLabel.text, "バナナには勝てなかったよ...");
+      }else{
+        text = 'Score: {0}\n{1}\n'.format(params.score, "バナナには勝てなかったよ...");
+      }
       var url = phina.social.Twitter.createURL({
         text: text,
         hashtags: params.hashtags,
