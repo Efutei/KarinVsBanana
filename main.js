@@ -29,6 +29,7 @@ var KARIN_START_Y = SCREEN_HEIGHT / 2 + 80;
 var score = 0;
 var gameOver = false;
 var thisResult;
+var rankTimeout;
 
 phina.define('StartImage', {
   superClass: 'Sprite',
@@ -149,14 +150,15 @@ phina.define('MainScene', {
   gameOver: function(){
     SoundManager.stopMusic();
     SoundManager.play('down');
-    //this.getRank();
+    this.getRank();
     this.exit({
       score: score,
-      message: 'Rank: 停止中',
+      message: 'Rank: 取得中...',
       hashtags: '歌鈴vsバナナ'
     });
   },
   getRank: function(){
+    rankTimeout = window.setTimeout(failedToFetch, 5000);
     var script = phina.asset.Script();
     var src = "https://script.google.com/macros/s/AKfycbwCh1wpH0GkdByhDwzb7JOE-yUvjWoxGzfZPr3J824bOqGRe1Sm/exec?";
     src += "score="+score+"&callback=cameRankData";
@@ -165,8 +167,13 @@ phina.define('MainScene', {
 });
 
 function cameRankData(json){
+  window.clearTimeout(rankTimeout);
   var newMessage = "Rank: "+json.response.rank + " / " + json.response.total;
   thisResult.rankingLabel.text = newMessage;
+}
+
+function failedToFetch(){
+  thisResult.rankingLabel.text = "Rank: 取得失敗";
 }
 
 phina.define('Bg', {
