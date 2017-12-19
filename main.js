@@ -30,6 +30,7 @@ var score = 0;
 var gameOver = false;
 var thisResult;
 var rankTimeout;
+var restrictionCount = 0;
 
 phina.define('StartImage', {
   superClass: 'Sprite',
@@ -105,6 +106,10 @@ phina.define('MainScene', {
     notSpawnCount = 0;
     score = 0;
     gameOver = false;
+    if(restrictionCount > 0){//ランキング機能を制限
+      restrictionCount -= 1;
+    }
+    console.log(restrictionCount);
     // 背景色を指定
     this.backgroundColor = '#444';
     this.bg0 = Bg().addChildTo(this);
@@ -150,10 +155,16 @@ phina.define('MainScene', {
   gameOver: function(){
     SoundManager.stopMusic();
     SoundManager.play('down');
-    this.getRank();
+    var rankMessage;
+    if(restrictionCount === 0){
+      this.getRank();
+      rankMessage = 'Rank: 取得中...';
+    }else{
+      rankMessage = 'Rank: 制限中';
+    }
     this.exit({
       score: score,
-      message: 'Rank: 取得中...',
+      message: rankMessage,
       hashtags: '歌鈴vsバナナ'
     });
   },
@@ -174,6 +185,7 @@ function cameRankData(json){
 
 function failedToFetch(){
   thisResult.rankingLabel.text = "Rank: 取得失敗";
+  restrictionCount = 3;
 }
 
 phina.define('Bg', {
