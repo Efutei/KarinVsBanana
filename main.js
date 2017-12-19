@@ -157,6 +157,7 @@ phina.define('MainScene', {
   gameOver: function(){
     SoundManager.stopMusic();
     SoundManager.play('down');
+    ‪gotRank = false; //リスタートが早い人対策‬
     var rankMessage;
     if(restrictionCount === 0){
       this.getRank();
