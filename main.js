@@ -156,7 +156,7 @@ phina.define('MainScene', {
     SoundManager.stopMusic();
     SoundManager.play('down');
     var rankMessage;
-    if(restrictionCount === 0){
+    if(restrictionCount === 0 && false){
       this.getRank();
       rankMessage = 'Rank: 取得中...';
     }else{
