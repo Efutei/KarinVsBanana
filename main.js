@@ -111,7 +111,6 @@ phina.define('MainScene', {
     if(restrictionCount > 0){//ランキング機能を制限
       restrictionCount -= 1;
     }
-    console.log(restrictionCount);
     // 背景色を指定
     this.backgroundColor = '#444';
     this.bg0 = Bg().addChildTo(this);
