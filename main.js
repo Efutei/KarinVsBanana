@@ -171,7 +171,7 @@ phina.define('MainScene', {
     });
   },
   getRank: function(){
-    rankTimeout = window.setTimeout(failedToFetch, 4000);
+    rankTimeout = window.setTimeout(failedToFetch, 20000);
     var script = phina.asset.Script();
     var src = "https://script.google.com/macros/s/AKfycbwCh1wpH0GkdByhDwzb7JOE-yUvjWoxGzfZPr3J824bOqGRe1Sm/exec?";
     src += "score="+score+"&callback=cameRankData";
